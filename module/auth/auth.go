@@ -47,8 +47,15 @@ func GetLoginedUser(ctx *rfweb.Context) *User {
 		log.Println("[ERROR] get session error: ", err)
 		return nil
 	}
-	if len(user.Id) > 0 {
-		ctx.Data[constant.CTX_KEY_USER] = &user
+	if user.Id != "" {
+		ctx.Data[constant.CTX_KEY_USER] = user
+	} else if basicUser, basicPwd, ok := ctx.R.BasicAuth(); ok {
+		if bUser, err := LoginUser(basicUser, basicPwd); err == nil {
+			user = *bUser
+			session.SetStuct(constant.SS_KEY_USER, user)
+		} else {
+			return nil
+		}
 	} else {
 		return nil
 	}

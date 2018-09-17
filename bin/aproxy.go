@@ -9,12 +9,10 @@ import (
 
 	"aproxy/conf"
 	"aproxy/lib/rfweb/session"
-	"aproxy/loginservices/github"
 	"aproxy/module/auth"
 	"aproxy/module/auth/login"
 	bkconf "aproxy/module/backend_conf"
 	"aproxy/module/db"
-	"aproxy/module/oauth"
 	"aproxy/module/proxy"
 	"aproxy/module/setting"
 )
@@ -48,7 +46,8 @@ func main() {
 	// Set backend-config storage to MongoDB
 	bkconf.SetBackendConfStorageToMongo()
 	// Set user storage to MongoDB
-	auth.SetUserStorageToMongo()
+	//auth.SetUserStorageToMongo()
+	auth.SetUserStorage(&auth.RedmineUserStorage{config.Redmine.Server})
 
 	// session
 	ssConf := config.Session
@@ -64,9 +63,6 @@ func main() {
 
 	// setting manager
 	setting.InitSettingServer(config.WebDir, config.AproxyUrlPrefix)
-
-	//oauth
-	initOauth(config)
 
 	lhost := config.Listen
 	mux := http.NewServeMux()
@@ -100,16 +96,4 @@ func checkWebDir(webDir string) bool {
 		return false
 	}
 	return true
-}
-
-func initOauth(config *conf.AproxyConfig) {
-	oauthConfig := config.Oauth
-	if oauthConfig.Open {
-		if oauthConfig.Github.Open {
-			github.InitGithubOauther(setting.AproxyUrlPrefix, config.LoginHost,
-				oauthConfig.Github.ClientID, oauthConfig.Github.ClientSecret)
-			o := github.GithubOauther{}
-			oauth.Register(o)
-		}
-	}
 }

@@ -116,6 +116,10 @@ func GetSession(w http.ResponseWriter, r *http.Request) (*Session, error) {
 		if err == nil {
 			WriteSessionId(w, sid, sessionExp)
 		}
+		if _, _, ok := r.BasicAuth(); ok {
+			//if use basic auth
+			sid = r.Header.Get("Authorization")
+		}
 	}
 	s := NewSession(sid)
 	return s, nil

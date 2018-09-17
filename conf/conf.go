@@ -27,6 +27,9 @@ type AproxyConfig struct {
 			Db      string
 		}
 	}
+	Redmine struct {
+		Server string
+	}
 	Oauth struct {
 		Open   bool
 		Github struct {
