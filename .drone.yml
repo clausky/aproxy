@@ -1,0 +1,14 @@
+workspace:
+  base: /root/go
+  path: src/github.com/shunfei/aproxy
+
+pipeline:
+  publish:
+    group: publish
+    image: plugins/docker
+    auto_tag: true
+    secrets:
+      - docker_username
+      - docker_password
+      - plugin_repo
+      - plugin_registry
